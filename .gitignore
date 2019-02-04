@@ -1,0 +1,4 @@
+creds.tf
+.terraform/
+*.tfvars
+*.tfstate*
