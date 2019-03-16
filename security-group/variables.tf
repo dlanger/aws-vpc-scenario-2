@@ -13,21 +13,28 @@ variable "environment" {
   description = "environment this is being deployed into"
 }
 
+variable "name_suffix" {
+  type        = "string"
+  description = "suffix to append to the generated name (seen in the console), to describe purpose"
+  default     = ""
+}
+
 variable "allowed_cidrs" {
   type        = "list"
-  description = "list of CIDRs to allow ingress from"
+  description = "list of CIDR:port pairs to allow ingress from"
   default     = []
 }
 
 variable "allowed_sgs" {
   type        = "list"
-  description = "list of security groups to allow ingress from"
+  description = "list of security-group:port pairs to allow ingress from"
   default     = []
 }
 
-variable "allowed_ports" {
+variable "allowed_mutual_ports" {
   type        = "list"
-  description = "list of ports to allow ingress on"
+  description = "list of ports to allow ingress on from within the SG"
+  default     = []
 }
 
 variable "vpc_id" {

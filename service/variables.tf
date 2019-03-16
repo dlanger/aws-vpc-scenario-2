@@ -13,6 +13,12 @@ variable "environment" {
   description = "environment this is being deployed into"
 }
 
+variable "name_suffix" {
+  type        = "string"
+  description = "suffix to append to the generated name (seen in the console), to describe purpose or type"
+  default     = ""
+}
+
 variable "deletion_protection" {
   type        = "string"
   description = "enable deletion protection, meaning that TF would be unable to delete the ALB without you going into the web console first to unprotect this"
@@ -36,17 +42,27 @@ variable "public_subnets" {
 
 variable "lb_security_groups" {
   type        = "list"
-  description = "list of SGs to attach to the LB"
+  description = "list of SGs to attach to the LB (lb->instances SG will be auto-generated)"
   default     = []
 }
 
 variable "instance_security_groups" {
   type        = "list"
-  description = "list of SGs to attach to the instances"
+  description = "list of SGs to attach to the instances (lb->instances SG will be auto-generated)"
   default     = []
 }
 
 variable "healthcheck" {
   type        = "string"
   description = "path to the instance healthcheck"
+}
+
+variable "server_port" {
+  type        = "string"
+  description = "port on which the server is running"
+}
+
+variable "vpc_id" {
+  type        = "string"
+  description = "VPC the security group will be in"
 }

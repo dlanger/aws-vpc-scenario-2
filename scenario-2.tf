@@ -26,36 +26,41 @@ module "sg_all_apps_external" {
   cost_centre  = "infrastructure"
   environment  = "${local.environment}"
 
-  vpc_id        = "${module.network.vpc_id}"
-  allowed_cidrs = ["0.0.0.0/0"]
-  allowed_ports = ["80", "443"]
+  vpc_id = "${module.network.vpc_id}"
+
+  allowed_cidrs = [
+    "0.0.0.0/0:80",
+    "0.0.0.0/0:443",
+  ]
 }
 
-module "sg_app1_internal" {
+module "sg_instances_internal_access" {
   source = "./security-group"
 
-  service_name = "app1"
-  cost_centre  = "app1"
+  service_name = "common"
+  name_suffix  = "-internal"
+  cost_centre  = "infrastructure"
   environment  = "${local.environment}"
 
-  vpc_id        = "${module.network.vpc_id}"
-  allowed_sgs   = ["${module.sg_all_apps_external.id}"]
-  allowed_ports = ["8000"]
+  vpc_id = "${module.network.vpc_id}"
 }
 
 module "service" {
   source = "./service"
 
-  service_name = "app1-web"
+  service_name = "app1"
+  name_suffix  = "-web"
   cost_centre  = "app1"
   environment  = "${local.environment}"
 
+  vpc_id                   = "${module.network.vpc_id}"
   public_subnets           = "${module.network.public_subnet_ids}"
   lb_security_groups       = ["${module.sg_all_apps_external.id}"]
-  instance_security_groups = ["${module.sg_app1_internal.id}"]
+  instance_security_groups = ["${module.sg_instances_internal_access.id}"]
 
   healthcheck  = "/healthcheck"
   idle_timeout = "60"
+  server_port  = "8000"
 
   deletion_protection = "false"
   log_bucket_name     = "${local.log_bucket_name}"
