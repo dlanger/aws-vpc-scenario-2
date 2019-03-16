@@ -33,7 +33,8 @@ resource "aws_lb" "this" {
 module "lb_to_instances_sg" {
   source = "../security-group"
 
-  service_name = "${local.common_tags["Service"]}-lb-link"
+  service_name = "${local.common_tags["Service"]}"
+  name_suffix  = "-lb-link"
   cost_centre  = "${local.common_tags["Cost-centre"]}"
   environment  = "${local.common_tags["Environment"]}"
 
