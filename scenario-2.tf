@@ -1,6 +1,7 @@
 locals {
-  environment     = "${var.environment}"
-  log_bucket_name = "${var.log_bucket_name}"
+  environment                     = "${var.environment}"
+  log_bucket_name                 = "${var.log_bucket_name}"
+  external_lb_ssl_certificate_arn = "${var.external_lb_ssl_certificate_arn}"
 }
 
 module "network" {
@@ -12,8 +13,8 @@ module "network" {
 
   vpc_cidr        = "10.100.0.0/16"
   azs             = ["us-east-2a", "us-east-2b"]
-  public_subnets  = ["10.100.21.0/24", "10.100.22.0/24", "10.100.23.0/24"]
-  private_subnets = ["10.100.1.0/24", "10.100.2.0/24", "10.100.3.0/24"]
+  public_subnets  = ["10.100.21.0/24", "10.100.22.0/24"]
+  private_subnets = ["10.100.1.0/24", "10.100.2.0/24"]
 
   assign_ipv6_ips = "false"
   nat_per_az      = "false"
@@ -53,14 +54,15 @@ module "service_app1" {
   cost_centre  = "app1"
   environment  = "${local.environment}"
 
-  vpc_id                   = "${module.network.vpc_id}"
-  public_subnets           = "${module.network.public_subnet_ids}"
-  lb_security_groups       = ["${module.sg_external_lb.id}"]
-  instance_security_groups = ["${module.sg_internal_all_instances.id}"]
+  vpc_id                          = "${module.network.vpc_id}"
+  public_subnets                  = "${module.network.public_subnet_ids}"
+  lb_security_groups              = ["${module.sg_external_lb.id}"]
+  instance_security_groups        = ["${module.sg_internal_all_instances.id}"]
+  external_lb_ssl_certificate_arn = "${local.external_lb_ssl_certificate_arn}"
 
-  healthcheck  = "/healthcheck"
-  idle_timeout = "60"
-  server_port  = "8000"
+  healthcheck_path = "/healthcheck"
+  idle_timeout     = "60"
+  server_port      = "8000"
 
   deletion_protection = "false"
   log_bucket_name     = "${local.log_bucket_name}"

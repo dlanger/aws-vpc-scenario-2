@@ -7,29 +7,6 @@ locals {
   }
 }
 
-resource "aws_lb" "this" {
-  load_balancer_type = "application"
-  name               = "${local.common_tags["Name"]}"
-  internal           = "false"
-
-  security_groups = ["${concat(var.lb_security_groups, list(module.sg_lb_to_instances.id))}"]
-  subnets         = ["${var.public_subnets}"]
-  idle_timeout    = "${var.idle_timeout}"
-
-  enable_deletion_protection       = "${var.deletion_protection}"
-  enable_cross_zone_load_balancing = "true"
-  enable_http2                     = "true"
-  ip_address_type                  = "ipv4"
-
-  access_logs {
-    enabled = true
-    bucket  = "${var.log_bucket_name}"
-    prefix  = "${local.common_tags["Name"]}-"
-  }
-
-  tags = "${local.common_tags}"
-}
-
 module "sg_lb_to_instances" {
   source = "../security-group"
 

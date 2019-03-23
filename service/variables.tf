@@ -37,7 +37,7 @@ variable "log_bucket_name" {
 
 variable "public_subnets" {
   type        = "list"
-  description = "list of public subnets to put the LB into, must span two or more AZs"
+  description = "list of public subnets to put the LB into, must span two or more AZs and not have more than one subnet per AZ"
 }
 
 variable "lb_security_groups" {
@@ -52,11 +52,6 @@ variable "instance_security_groups" {
   default     = []
 }
 
-variable "healthcheck" {
-  type        = "string"
-  description = "path to the instance healthcheck"
-}
-
 variable "server_port" {
   type        = "string"
   description = "port on which the server is running"
@@ -65,4 +60,62 @@ variable "server_port" {
 variable "vpc_id" {
   type        = "string"
   description = "VPC the security group will be in"
+}
+
+variable "external_lb_ssl_policy" {
+  type        = "string"
+  description = "cipher policy for external ssl connections to lb, see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/create-https-listener.html#describe-ssl-policies for options"
+  default     = "ELBSecurityPolicy-2016-08"
+}
+
+variable "external_lb_ssl_certificate_arn" {
+  type        = "string"
+  description = "arn of the ssl certificate to use for external connections to the lb for your domain"
+}
+
+variable "healthcheck_path" {
+  type        = "string"
+  description = "path to the instance healthcheck"
+}
+
+variable "healthcheck_interval" {
+  type        = "string"
+  description = "delay between health checks"
+  default     = "15"
+}
+
+variable "healthcheck_timeout" {
+  type        = "string"
+  description = "timeout for healthcheck response"
+  default     = "10"
+}
+
+variable "healthcheck_healthy_response_range" {
+  type        = "string"
+  description = "range of status codes from the healthcheck to show a healthy instance"
+  default     = "200-399"
+}
+
+variable "healthcheck_healthy_count" {
+  type        = "string"
+  description = "number of sequential healthy responses to mark an instance healthy"
+  default     = "3"
+}
+
+variable "healthcheck_unhealthy_count" {
+  type        = "string"
+  description = "number of sequential unhealthy responses to mark an instance unhealthy"
+  default     = "2"
+}
+
+variable "draining_time" {
+  type        = "string"
+  description = "number of seconds for to lb to allow draining requests to finish"
+  default     = "60"
+}
+
+variable "warmup_time" {
+  type        = "string"
+  description = "number of seconds for new targets to receive an increasing % of requests, as opposed straight from 0% to a full share"
+  default     = "30"
 }
