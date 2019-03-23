@@ -53,7 +53,6 @@ resource "aws_lb_listener" "external_http" {
 
 resource "aws_lb_target_group" "server" {
   vpc_id = "${var.vpc_id}"
-  name   = "${local.common_tags["Name"]}"
 
   port     = "${var.server_port}"
   protocol = "HTTP"

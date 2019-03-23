@@ -49,6 +49,9 @@ module "sg_internal_all_instances" {
 module "service_app1" {
   source = "./service"
 
+  instance_type = "t3.small"
+  ami           = "ami-01b4a64ff94ebdc0c"
+
   service_name = "app1"
   name_suffix  = "-web"
   cost_centre  = "app1"
@@ -56,13 +59,16 @@ module "service_app1" {
 
   vpc_id                          = "${module.network.vpc_id}"
   public_subnets                  = "${module.network.public_subnet_ids}"
+  private_subnets                 = "${module.network.private_subnet_ids}"
   lb_security_groups              = ["${module.sg_external_lb.id}"]
   instance_security_groups        = ["${module.sg_internal_all_instances.id}"]
   external_lb_ssl_certificate_arn = "${local.external_lb_ssl_certificate_arn}"
 
-  healthcheck_path = "/healthcheck"
-  idle_timeout     = "60"
-  server_port      = "8000"
+  num_instances       = "3"
+  server_port         = "80"
+  healthcheck_path    = "/"
+  idle_timeout        = "60"
+  instance_ready_time = "90"
 
   deletion_protection = "false"
   log_bucket_name     = "${local.log_bucket_name}"

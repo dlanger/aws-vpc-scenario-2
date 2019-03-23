@@ -25,19 +25,24 @@ variable "deletion_protection" {
   default     = "false"
 }
 
-variable "idle_timeout" {
-  type        = "string"
-  description = "time (in seconds) that a connection can be idle before being dropped"
-}
-
 variable "log_bucket_name" {
   type        = "string"
   description = "name for the S3 bucket where logs will go"
 }
 
+variable "vpc_id" {
+  type        = "string"
+  description = "VPC the security group will be in"
+}
+
 variable "public_subnets" {
   type        = "list"
   description = "list of public subnets to put the LB into, must span two or more AZs and not have more than one subnet per AZ"
+}
+
+variable "private_subnets" {
+  type        = "list"
+  description = "list of private subnets to put the instances into, must span two or more AZs and not have more than one subnet per AZ"
 }
 
 variable "lb_security_groups" {
@@ -57,11 +62,6 @@ variable "server_port" {
   description = "port on which the server is running"
 }
 
-variable "vpc_id" {
-  type        = "string"
-  description = "VPC the security group will be in"
-}
-
 variable "external_lb_ssl_policy" {
   type        = "string"
   description = "cipher policy for external ssl connections to lb, see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/create-https-listener.html#describe-ssl-policies for options"
@@ -71,6 +71,11 @@ variable "external_lb_ssl_policy" {
 variable "external_lb_ssl_certificate_arn" {
   type        = "string"
   description = "arn of the ssl certificate to use for external connections to the lb for your domain"
+}
+
+variable "idle_timeout" {
+  type        = "string"
+  description = "time (in seconds) that a connection can be idle before being dropped"
 }
 
 variable "healthcheck_path" {
@@ -118,4 +123,42 @@ variable "warmup_time" {
   type        = "string"
   description = "number of seconds for new targets to receive an increasing % of requests, as opposed straight from 0% to a full share"
   default     = "30"
+}
+
+variable "num_instances" {
+  type        = "string"
+  description = "number of instances of server to run"
+}
+
+variable "instance_ready_time" {
+  type        = "string"
+  description = "time (in seconds) it takes for an instance to go from powered-off to ready to serve requests"
+}
+
+variable "unlimited_credits" {
+  type        = "string"
+  description = "credit option for burstable instances (impacts billing)"
+  default     = "false"
+}
+
+variable "instance_iam_profile" {
+  type        = "string"
+  description = "ARN of IAM profile to apply to the instances"
+  default     = ""
+}
+
+variable "ami" {
+  type        = "string"
+  description = "ami to deploy"
+}
+
+variable "instance_type" {
+  type        = "string"
+  description = "instance type to deploy"
+}
+
+variable "ssh_keypair_name" {
+  type        = "string"
+  description = "AWS name of the SSH keypair to bake into the instances"
+  default     = ""
 }
