@@ -1,9 +1,16 @@
 resource "aws_autoscaling_group" "server" {
-  name                 = "${local.common_tags["Name"]}" # TIE THIS INTO THE NAME BELOW SO IT REGENERATES TO DEPLOY
-  vpc_zone_identifier  = ["${var.private_subnets}"]
-  termination_policies = ["OldestInstance"]
-  metrics_granularity  = "1Minute"
+  /* 
+    We tie `name` into the name & version of the launch template to trigger      
+    a refresh of the instances (to use the new template) on changes to it.   
+    If we didn't, the changes would only come into effect as instances naturally  
+    cycle out or we terminate them. 
+  */
 
+  name = "${local.common_tags["Name"]}--${aws_launch_template.server.id}--${aws_launch_template.server.latest_version}"
+
+  vpc_zone_identifier       = ["${var.private_subnets}"]
+  termination_policies      = ["OldestInstance"]
+  metrics_granularity       = "1Minute"
   max_size                  = "${var.num_instances * 2}"
   min_size                  = "${var.num_instances}"
   desired_capacity          = "${var.num_instances}"
@@ -19,12 +26,12 @@ resource "aws_autoscaling_group" "server" {
     version = "$$Latest"
   }
 
-  # tags = ["${list(
-  #   map("Cost-centre", "${local.common_tags["Cost-centre"]}", "propagate_at_launch", "true"),
-  #   map("Service", "${local.common_tags["Service"]}", "propagate_at_launch", "true"),
-  #   map("Environment", "${local.common_tags["Environment"]}", "propagate_at_launch", "true"),
-  #   map("Name", "${local.common_tags["Name"]}", "propagate_at_launch", "true")
-  # )}"]
+  tags = ["${list(
+    map("key", "Cost-centre", "value", "${local.common_tags["Cost-centre"]}", "propagate_at_launch", "true"),
+    map("key", "Service", "value", "${local.common_tags["Service"]}", "propagate_at_launch", "true"),
+    map("key", "Environment", "value", "${local.common_tags["Environment"]}", "propagate_at_launch", "true"),
+    map("key", "Name", "value", "${local.common_tags["Name"]}", "propagate_at_launch", "true")
+  )}"]
 
   lifecycle {
     create_before_destroy = "true"

@@ -143,7 +143,7 @@ variable "unlimited_credits" {
 
 variable "instance_iam_profile" {
   type        = "string"
-  description = "ARN of IAM profile to apply to the instances"
+  description = "name of IAM profile to apply to the instances"
   default     = ""
 }
 

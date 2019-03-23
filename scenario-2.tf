@@ -50,7 +50,7 @@ module "service_app1" {
   source = "./service"
 
   instance_type = "t3.small"
-  ami           = "ami-01b4a64ff94ebdc0c"
+  ami           = "ami-00c5940f2b52c5d98"
 
   service_name = "app1"
   name_suffix  = "-web"
@@ -63,6 +63,7 @@ module "service_app1" {
   lb_security_groups              = ["${module.sg_external_lb.id}"]
   instance_security_groups        = ["${module.sg_internal_all_instances.id}"]
   external_lb_ssl_certificate_arn = "${local.external_lb_ssl_certificate_arn}"
+  instance_iam_profile            = "blank-role"
 
   num_instances       = "3"
   server_port         = "80"
