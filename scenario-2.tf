@@ -1,6 +1,6 @@
 locals {
-  environment     = "stage"
-  log_bucket_name = "dlanger-test-logs"
+  environment     = "${var.environment}"
+  log_bucket_name = "${var.log_bucket_name}"
 }
 
 module "network" {
@@ -19,7 +19,7 @@ module "network" {
   nat_per_az      = "false"
 }
 
-module "sg_all_apps_external" {
+module "sg_external_lb" {
   source = "./security-group"
 
   service_name = "common"
@@ -34,7 +34,7 @@ module "sg_all_apps_external" {
   ]
 }
 
-module "sg_instances_internal_access" {
+module "sg_internal_all_instances" {
   source = "./security-group"
 
   service_name = "common"
@@ -45,7 +45,7 @@ module "sg_instances_internal_access" {
   vpc_id = "${module.network.vpc_id}"
 }
 
-module "service" {
+module "service_app1" {
   source = "./service"
 
   service_name = "app1"
@@ -55,8 +55,8 @@ module "service" {
 
   vpc_id                   = "${module.network.vpc_id}"
   public_subnets           = "${module.network.public_subnet_ids}"
-  lb_security_groups       = ["${module.sg_all_apps_external.id}"]
-  instance_security_groups = ["${module.sg_instances_internal_access.id}"]
+  lb_security_groups       = ["${module.sg_external_lb.id}"]
+  instance_security_groups = ["${module.sg_internal_all_instances.id}"]
 
   healthcheck  = "/healthcheck"
   idle_timeout = "60"

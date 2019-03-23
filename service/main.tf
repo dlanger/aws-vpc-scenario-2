@@ -12,7 +12,7 @@ resource "aws_lb" "this" {
   name               = "${local.common_tags["Name"]}"
   internal           = "false"
 
-  security_groups = ["${concat(var.lb_security_groups, list(module.lb_to_instances_sg.id))}"]
+  security_groups = ["${concat(var.lb_security_groups, list(module.sg_lb_to_instances.id))}"]
   subnets         = ["${var.public_subnets}"]
   idle_timeout    = "${var.idle_timeout}"
 
@@ -24,13 +24,13 @@ resource "aws_lb" "this" {
   access_logs {
     enabled = true
     bucket  = "${var.log_bucket_name}"
-    prefix  = "${local.common_tags["Name"]}"
+    prefix  = "${local.common_tags["Name"]}-"
   }
 
   tags = "${local.common_tags}"
 }
 
-module "lb_to_instances_sg" {
+module "sg_lb_to_instances" {
   source = "../security-group"
 
   service_name = "${local.common_tags["Service"]}"
