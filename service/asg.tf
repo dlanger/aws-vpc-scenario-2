@@ -14,10 +14,11 @@ resource "aws_autoscaling_group" "server" {
 
   name = "${local.common_tags["Name"]}--${aws_launch_template.server.id}--${aws_launch_template.server.latest_version}"
 
-  vpc_zone_identifier       = ["${var.private_subnets}"]
-  termination_policies      = ["OldestInstance"]
-  target_group_arns         = ["${aws_lb_target_group.server.arn}"]
-  metrics_granularity       = "1Minute"
+  vpc_zone_identifier  = ["${var.private_subnets}"]
+  termination_policies = ["OldestInstance"]
+  target_group_arns    = ["${aws_lb_target_group.server.arn}"]
+  metrics_granularity  = "1Minute"
+
   max_size                  = "${var.num_instances * 2}"
   min_size                  = "${var.num_instances}"
   desired_capacity          = "${var.num_instances}"
@@ -25,6 +26,7 @@ resource "aws_autoscaling_group" "server" {
   wait_for_capacity_timeout = "${var.instance_ready_time * 3}s"
   wait_for_elb_capacity     = "${var.num_instances}"
   default_cooldown          = "${var.instance_ready_time}"
+
   health_check_grace_period = "${var.instance_ready_time}"
   health_check_type         = "ELB"
 

@@ -46,9 +46,8 @@ module "sg_internal_all_instances" {
   vpc_id = "${module.network.vpc_id}"
 }
 
-module "iam_policy_app1" {
-  source          = "./iam-instance-policy"
-  profile_name    = "app1-server"
+module "iam_profile_app1" {
+  source          = "./iam-instance-profile"
   policy_document = ""
 
   service_name = "app1"
@@ -71,7 +70,7 @@ module "service_app1" {
   public_subnets                  = "${module.network.public_subnet_ids}"
   private_subnets                 = "${module.network.private_subnet_ids}"
   external_lb_ssl_certificate_arn = "${local.external_lb_ssl_certificate_arn}"
-  instance_iam_profile            = "${module.iam_policy_app1.name}"
+  instance_iam_profile            = "${module.iam_profile_app1.profile_name}"
   lb_security_groups              = ["${module.sg_external_lb.id}"]
   instance_security_groups        = ["${module.sg_internal_all_instances.id}"]
 
