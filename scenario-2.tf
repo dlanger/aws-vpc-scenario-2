@@ -1,5 +1,5 @@
 locals {
-  environment                     = "${var.environment}"
+  environment                     = "stage"
   log_bucket_name                 = "${var.log_bucket_name}"
   external_lb_ssl_certificate_arn = "${var.external_lb_ssl_certificate_arn}"
 }
@@ -46,6 +46,16 @@ module "sg_internal_all_instances" {
   vpc_id = "${module.network.vpc_id}"
 }
 
+module "iam_policy_app1" {
+  source          = "./iam-instance-policy"
+  profile_name    = "app1-server"
+  policy_document = ""
+
+  service_name = "app1"
+  cost_centre  = "app1"
+  environment  = "${local.environment}"
+}
+
 module "service_app1" {
   source = "./service"
 
@@ -60,13 +70,13 @@ module "service_app1" {
   vpc_id                          = "${module.network.vpc_id}"
   public_subnets                  = "${module.network.public_subnet_ids}"
   private_subnets                 = "${module.network.private_subnet_ids}"
+  external_lb_ssl_certificate_arn = "${local.external_lb_ssl_certificate_arn}"
+  instance_iam_profile            = "${module.iam_policy_app1.name}"
   lb_security_groups              = ["${module.sg_external_lb.id}"]
   instance_security_groups        = ["${module.sg_internal_all_instances.id}"]
-  external_lb_ssl_certificate_arn = "${local.external_lb_ssl_certificate_arn}"
-  instance_iam_profile            = "blank-role"
 
   num_instances       = "3"
-  server_port         = "80"
+  server_port         = "8000"
   healthcheck_path    = "/"
   idle_timeout        = "60"
   instance_ready_time = "90"

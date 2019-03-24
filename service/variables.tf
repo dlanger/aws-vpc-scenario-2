@@ -162,3 +162,9 @@ variable "ssh_keypair_name" {
   description = "AWS name of the SSH keypair to bake into the instances"
   default     = ""
 }
+
+variable "user_data" {
+  type        = "string"
+  description = "user_data to inject into the instance on boot by cloud-init"
+  default     = ""
+}

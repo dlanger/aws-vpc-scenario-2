@@ -1,15 +1,22 @@
 resource "aws_autoscaling_group" "server" {
   /* 
-    We tie `name` into the name & version of the launch template to trigger      
-    a refresh of the instances (to use the new template) on changes to it.   
-    If we didn't, the changes would only come into effect as instances naturally  
-    cycle out or we terminate them. 
+    We interpolate the ID and the version of the launch template into 
+    the name of this autoscaling group, which ensures that the ASG will
+    get re-created if the launch template is changed (since you can't edit
+    the name of an existing ASG). This causes new instances using the new launch
+    template to be spun up immediately, as opposed to only when an existing
+    instance dies.
+
+    This is an updated version of the strategy from 
+    https://groups.google.com/forum/#!msg/terraform-tool/7Gdhv1OAc80/iNQ93riiLwAJ, 
+    but using launch templates vs. configurations. 
   */
 
   name = "${local.common_tags["Name"]}--${aws_launch_template.server.id}--${aws_launch_template.server.latest_version}"
 
   vpc_zone_identifier       = ["${var.private_subnets}"]
   termination_policies      = ["OldestInstance"]
+  target_group_arns         = ["${aws_lb_target_group.server.arn}"]
   metrics_granularity       = "1Minute"
   max_size                  = "${var.num_instances * 2}"
   min_size                  = "${var.num_instances}"
@@ -45,7 +52,7 @@ resource "aws_launch_template" "server" {
   instance_type          = "${var.instance_type}"
   key_name               = "${var.ssh_keypair_name}"
   vpc_security_group_ids = ["${concat(var.instance_security_groups, list(module.sg_lb_to_instances.id))}"]
-  user_data              = ""
+  user_data              = "${var.user_data}"
 
   credit_specification {
     cpu_credits = "${var.unlimited_credits ? "unlimited" : "standard"}"
@@ -65,9 +72,4 @@ resource "aws_launch_template" "server" {
     resource_type = "instance"
     tags          = "${local.common_tags}"
   }
-}
-
-resource "aws_autoscaling_attachment" "server" {
-  autoscaling_group_name = "${aws_autoscaling_group.server.id}"
-  alb_target_group_arn   = "${aws_lb_target_group.server.arn}"
 }
