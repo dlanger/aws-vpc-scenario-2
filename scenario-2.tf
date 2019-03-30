@@ -2,6 +2,7 @@ locals {
   environment                     = "stage"
   log_bucket_name                 = "${var.log_bucket_name}"
   external_lb_ssl_certificate_arn = "${var.external_lb_ssl_certificate_arn}"
+  root_ssh_keypair_name           = "dan-1"
 }
 
 module "network" {
@@ -72,7 +73,7 @@ module "ssh_bastion" {
   accessible_security_groups = ["${module.sg_internal_all_instances.id}"]
   additional_security_groups = []
 
-  ssh_keypair_name = "dan-1"
+  ssh_keypair_name = "${local.root_ssh_keypair_name}"
 }
 
 module "service_app1" {
@@ -93,6 +94,7 @@ module "service_app1" {
   instance_iam_profile            = "${module.iam_profile_app1.profile_name}"
   lb_security_groups              = ["${module.sg_external_lb.id}"]
   instance_security_groups        = ["${module.sg_internal_all_instances.id}"]
+  ssh_keypair_name                = "${local.root_ssh_keypair_name}"
 
   num_instances       = "3"
   server_port         = "8000"
