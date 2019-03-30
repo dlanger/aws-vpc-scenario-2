@@ -29,7 +29,7 @@ module "sg_external_lb" {
 
   vpc_id = "${module.network.vpc_id}"
 
-  allowed_cidrs = [
+  allowed_origins = [
     "0.0.0.0/0:80",
     "0.0.0.0/0:443",
   ]
@@ -53,6 +53,26 @@ module "iam_profile_app1" {
   service_name = "app1"
   cost_centre  = "app1"
   environment  = "${local.environment}"
+}
+
+module "ssh_bastion" {
+  source = "./bastion-instance"
+
+  instance_type = "t3.small"
+  ami           = "ami-01b4a64ff94ebdc0c"
+
+  cost_centre = "infrastructure"
+  environment = "${local.environment}"
+
+  vpc_id               = "${module.network.vpc_id}"
+  public_subnet        = "${module.network.public_subnet_ids[0]}"
+  instance_iam_profile = "${module.iam_profile_app1.profile_name}"
+
+  allowed_cidrs              = ["0.0.0.0/0"]
+  accessible_security_groups = ["${module.sg_internal_all_instances.id}"]
+  additional_security_groups = []
+
+  ssh_keypair_name = "dan-1"
 }
 
 module "service_app1" {

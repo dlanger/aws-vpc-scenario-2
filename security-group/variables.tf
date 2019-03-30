@@ -19,7 +19,7 @@ variable "name_suffix" {
   default     = ""
 }
 
-variable "allowed_cidrs" {
+variable "allowed_origins" {
   type        = "list"
   description = "list of CIDR:port pairs to allow ingress from"
   default     = []
