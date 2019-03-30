@@ -1,9 +1,10 @@
 AWS' [VPC Scenario 2](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Scenario2.html), implemented in Terraform.
 
 This builds a system containing:
-* Auto-scaled instances spanning two availability zones, behind an application load balancer
+* Auto-scaled instances spanning two availability zones, behind an application load balancer, in a VPC
 * Routing set so that the instances don't have public IP addresses, and all outbound traffic is routed through a NAT gateway (either one per environment, or one per availability zone)
 * An SSH [bastion host](https://en.wikipedia.org/wiki/Bastion_host) with a public IP, which you can connect to and then from there connect to the private instances
+* Properly-configured security groups
 * Consistent resource tagging & naming, designed to support easy budget management and a pleasant console experience 
 
 These are delivered using a series of Terraform modules with sensible defaults, to make it easier to expand the system. 
