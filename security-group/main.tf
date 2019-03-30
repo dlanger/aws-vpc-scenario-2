@@ -26,14 +26,14 @@ resource "aws_security_group_rule" "egress_all" {
 }
 
 resource "aws_security_group_rule" "ingress_cidrs" {
-  count = "${length(var.allowed_cidrs)}"
+  count = "${length(var.allowed_origins)}"
 
   type              = "ingress"
   security_group_id = "${aws_security_group.this.id}"
 
-  cidr_blocks = ["${element(split(":", element(var.allowed_cidrs, count.index)), 0)}"]
-  from_port   = "${element(split(":", element(var.allowed_cidrs, count.index)), 1)}"
-  to_port     = "${element(split(":", element(var.allowed_cidrs, count.index)), 1)}"
+  cidr_blocks = ["${element(split(":", element(var.allowed_origins, count.index)), 0)}"]
+  from_port   = "${element(split(":", element(var.allowed_origins, count.index)), 1)}"
+  to_port     = "${element(split(":", element(var.allowed_origins, count.index)), 1)}"
   protocol    = "tcp"
 }
 
