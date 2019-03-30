@@ -59,7 +59,7 @@ module "service_app1" {
   source = "./service"
 
   instance_type = "t3.small"
-  ami           = "ami-00c5940f2b52c5d98"
+  ami           = "ami-01d7922d6fc64d362"
 
   service_name = "app1"
   name_suffix  = "-web"

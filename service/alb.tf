@@ -15,7 +15,7 @@ resource "aws_lb" "external" {
   access_logs {
     enabled = true
     bucket  = "${var.log_bucket_name}"
-    prefix  = "${local.common_tags["Name"]}-"
+    prefix  = "${local.common_tags["Name"]}"
   }
 
   tags = "${local.common_tags}"
